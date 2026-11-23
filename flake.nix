@@ -33,21 +33,9 @@
 
       podman-test = system-manager.lib.makeSystemConfig {
         modules = commonModules ++ [
-          ({ options, ... }: {
-            sops.package = options.sops.package.default.overrideAttrs (old: {
-              postInstall = ''
-                export GOMAXPROCS=2
-                export GOFLAGS="$GOFLAGS -p=2"
-              '' + (old.postInstall or "");
-            });
-          })
+          ./tests/environment/module.nix
         ];
       };
-    };
-
-    apps.x86_64-linux.default = {
-      type = "app";
-      program = "${system-manager.packages.x86_64-linux.default}/bin/system-manager";
     };
 
     devShells.${system}.default = import ./shell.nix {

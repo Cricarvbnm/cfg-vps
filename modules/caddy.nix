@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, ... }:
 let
   caddy-pkg = pkgs.caddy.withPlugins {
     plugins = [ "github.com/caddy-dns/duckdns@v0.5.0" ];

@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 let
   mihomo = "${pkgs.mihomo}/bin/mihomo";
   args = "-d /var/lib/mihomo -f /etc/mihomo/config.yaml";
