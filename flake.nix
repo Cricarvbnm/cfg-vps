@@ -21,5 +21,14 @@
       type = "app";
       program = "${system-manager.packages.x86_64-linux.default}/bin/system-manager";
     };
+
+    devShells = nixpkgs.lib.genAttrs
+      [ "x86_64-linux" ]
+      (system: {
+        default = import ./shell.nix {
+          pkgs = nixpkgs.legacyPackages.${system};
+          systemManager = system-manager.packages.${system}.default;
+        }
+      })
   };
 }
