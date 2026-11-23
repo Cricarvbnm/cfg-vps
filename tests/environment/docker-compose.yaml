@@ -1,0 +1,11 @@
+services:
+  vps:
+    build: .
+    working_dir: /project
+    volumes:
+      - ../..:/project
+    healthcheck:
+      test: ["CMD", "nix", "store", "ping", "--store", "daemon"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
