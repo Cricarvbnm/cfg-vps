@@ -24,6 +24,7 @@ in
       WorkingDirectory = "/var/lib/mihomo";
       ExecStartPre = "${mihomo} -t ${args}";
       ExecStart = "${mihomo} ${args}";
+      AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
       Restart = "on-failure";
       RestartSec = "5s";
     };
