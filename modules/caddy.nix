@@ -16,6 +16,7 @@ in
     sopsFile = ../secrets/Caddyfile;
     format = "binary";
     mode = "0440";
+    owner = "caddy";
     group = "caddy";
     restartUnits = [ "caddy.service" ];
   };
@@ -23,14 +24,13 @@ in
   systemd.services.caddy = rec {
     description = "Caddy web server";
     wantedBy = [ "multi-user.target" ];
-    wants = [ "network-online.target" ];
     requires = [ "sops-install-secrets.service" ];
     after = [ "network-online.target" ] ++ requires;
 
     serviceConfig = {
       Type = "notify";
       StateDirectory = "caddy";
-      StateDirectoryMode = "0700";
+      StateDirectoryMode = "0750";
       User = "caddy";
       Group = "caddy";
       Environment = [
@@ -42,6 +42,7 @@ in
 
       AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
       Restart = "on-failure";
+      RestartSec = "5s";
     };
   };
 }
