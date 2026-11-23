@@ -7,14 +7,40 @@
       url = "github:numtide/system-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, system-manager, ... }: {
-    systemConfigs.default = system-manager.lib.makeSystemConfig {
-      modules = [
-        { nixpkgs.hostPlatform = "x86_64-linux"; }
-        ./modules/mihomo.nix
-      ];
+  outputs = { nixpkgs, system-manager, sops-nix, ... }: 
+  let 
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+    commonModules = [
+      { nixpkgs.hostPlatform = system; }
+      sops-nix.nixosModules.sops
+      ./modules/mihomo.nix
+    ];
+  in
+  {
+    systemConfigs = {
+      default = system-manager.lib.makeSystemConfig {
+        modules = commonModules;
+      };
+
+      podman-test = system-manager.lib.makeSystemConfig {
+        modules = commonModules ++ [
+          ({ options, ... }: {
+            sops.package = options.sops.package.default.overrideAttrs (old: {
+              postInstall = ''
+                export GOMAXPROCS=2
+                export GOFLAGS="$GOFLAGS -p=2"
+              '' + (old.postInstall or "");
+            });
+          })
+        ];
+      };
     };
 
     apps.x86_64-linux.default = {
@@ -22,13 +48,9 @@
       program = "${system-manager.packages.x86_64-linux.default}/bin/system-manager";
     };
 
-    devShells = nixpkgs.lib.genAttrs
-      [ "x86_64-linux" ]
-      (system: {
-        default = import ./shell.nix {
-          pkgs = nixpkgs.legacyPackages.${system};
-          systemManager = system-manager.packages.${system}.default;
-        };
-      });
+    devShells.${system}.default = import ./shell.nix {
+      inherit pkgs;
+      systemManager = system-manager.packages.${system}.default;
+    };
   };
 }

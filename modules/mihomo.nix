@@ -1,16 +1,23 @@
 { config, pkgs, ... }:
 let
   mihomo = "${pkgs.mihomo}/bin/mihomo";
-  args = "-d /var/lib/mihomo -f /etc/mihomo/config.yaml";
+  args = "-d /var/lib/mihomo -f ${config.sops.secrets."mihomo.yaml".path}";
 in
 {
-  environment.etc."mihomo/config.yaml".source = ../config/mihomo.yaml;
+  sops.useSystemdActivation = true;
+  sops.age.keyFile = "/etc/sops/age/keys.txt";
 
-  systemd.services.mihomo = {
+  sops.secrets."mihomo.yaml" = {
+    sopsFile = ../secrets/mihomo.yaml;
+    restartUnits = [ "mihomo.service" ];
+    key = "";
+  };
+
+  systemd.services.mihomo = rec {
     description = "Mihomo proxy";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" ];
-    restartTriggers = [ config.environment.etc."mihomo/config.yaml".source ];
+    requires = [ "sops-install-secrets.service" ];
+    after = [ "network.target" ] ++ requires;
 
     serviceConfig = {
       StateDirectory = "mihomo";
