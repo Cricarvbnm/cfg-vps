@@ -1,9 +1,11 @@
 { config, lib, pkgs, ... }:
 let
-  caddy = pkgs.caddy.withPlugins {
+  caddy-pkg = pkgs.caddy.withPlugins {
     plugins = [ "github.com/caddy-dns/duckdns@v0.5.0" ];
     hash = "sha256-jSavcX0BjQRJZr8bJGy/mMPfLYYwlX+PeWc1IAzAZMM=";
   };
+  caddy = "${caddy-pkg}/bin/caddy";
+  args = "--config ${config.sops.secrets.Caddyfile.path} --adapter caddyfile";
 in
 {
   users.groups.caddy = {};
@@ -18,14 +20,15 @@ in
     mode = "0440";
     owner = "caddy";
     group = "caddy";
-    restartUnits = [ "caddy.service" ];
+    reloadUnits = [ "caddy.service" ];
   };
 
   systemd.services.caddy = rec {
     description = "Caddy web server";
     wantedBy = [ "multi-user.target" ];
+    wants = [ "network-online.target" ];
     requires = [ "sops-install-secrets.service" ];
-    after = [ "network-online.target" ] ++ requires;
+    after = wants ++ requires;
 
     serviceConfig = {
       Type = "notify";
@@ -38,7 +41,8 @@ in
         "XDG_CONFIG_HOME=/var/lib/caddy"
       ];
 
-      ExecStart = "${caddy}/bin/caddy run --config ${config.sops.secrets.Caddyfile.path} --adapter caddyfile";
+      ExecStart = "${caddy} run ${args}";
+      ExecReload = "${caddy} reload ${args}";
 
       AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
       Restart = "on-failure";
