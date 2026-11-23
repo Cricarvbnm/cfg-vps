@@ -3,7 +3,6 @@ pkgs.mkShellNoCC {
   packages = with pkgs; [
     systemManager
     sops age
-    mihomo
   ];
 
   shellHook = ''
