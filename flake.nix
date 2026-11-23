@@ -20,6 +20,7 @@
     commonModules = [
       { nixpkgs.hostPlatform = system; }
       sops-nix.nixosModules.sops
+      { sops.age.keyFile = "/etc/sops/age/key.txt"; }
       ./modules/mihomo.nix
       ./modules/caddy.nix
     ];
