@@ -4,4 +4,10 @@ pkgs.mkShellNoCC {
     systemManager
     pkgs.mihomo
   ];
+
+  shellHook = ''
+    if [[ $- == *i* ]]; then
+      exec ${pkgs.fish}/bin/fish
+    fi
+  '';
 }
