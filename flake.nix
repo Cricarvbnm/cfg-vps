@@ -28,7 +28,7 @@
         default = import ./shell.nix {
           pkgs = nixpkgs.legacyPackages.${system};
           systemManager = system-manager.packages.${system}.default;
-        }
-      })
+        };
+      });
   };
 }
