@@ -8,6 +8,8 @@ RUN apt-get update \
 RUN printf '\n%s\n' \
     'experimental-features = nix-command flakes' \
     'sandbox = false' \
+    'max-jobs = 1' \
+    'cores = 2' \
     >>/etc/nix/nix.conf
 
 CMD ["/sbin/init"]

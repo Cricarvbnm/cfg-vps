@@ -2,8 +2,11 @@ services:
   vps:
     build: .
     working_dir: /project
+    cap_add:
+      - SYS_ADMIN
     volumes:
       - ../..:/project
+      - ./nix:/nix
     healthcheck:
       test: ["CMD", "nix", "store", "ping", "--store", "daemon"]
       interval: 5s

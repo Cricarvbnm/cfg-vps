@@ -21,6 +21,7 @@
       { nixpkgs.hostPlatform = system; }
       sops-nix.nixosModules.sops
       ./modules/mihomo.nix
+      ./modules/caddy.nix
     ];
   in
   {

@@ -4,7 +4,6 @@ let
   args = "-d /var/lib/mihomo -f ${config.sops.secrets."mihomo.yaml".path}";
 in
 {
-  sops.useSystemdActivation = true;
   sops.age.keyFile = "/etc/sops/age/keys.txt";
 
   sops.secrets."mihomo.yaml" = {
