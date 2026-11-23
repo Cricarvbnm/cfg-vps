@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 let
-  mihomo = "${pkgs.mihomo}/bin/mihomo"
-  args = "-d /var/lib/mihomo -f /etc/mihomo/config.yaml"
+  mihomo = "${pkgs.mihomo}/bin/mihomo";
+  args = "-d /var/lib/mihomo -f /etc/mihomo/config.yaml";
 in
 {
   environment.etc."mihomo/config.yaml".source = ../config/mihomo.yaml;
