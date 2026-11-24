@@ -10,6 +10,7 @@
     postInstall = ''
       export GOMAXPROCS=2
       export GOFLAGS="$GOFLAGS -p=2"
-    '' + (old.postInstall or "");
+    ''
+    + (old.postInstall or "");
   });
 }

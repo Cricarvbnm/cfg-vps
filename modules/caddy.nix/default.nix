@@ -10,7 +10,7 @@ in
 {
   imports = [ ./mihomo-client.nix ];
 
-  users.groups.caddy = {};
+  users.groups.caddy = { };
   users.users.caddy = {
     isSystemUser = true;
     group = "caddy";
@@ -28,7 +28,10 @@ in
   systemd.services.caddy = rec {
     description = "Caddy web server";
     wantedBy = [ "multi-user.target" ];
-    wants = [ "network-online.target" "sops-install-secrets.service" ];
+    wants = [
+      "network-online.target"
+      "sops-install-secrets.service"
+    ];
     after = wants;
 
     serviceConfig = {

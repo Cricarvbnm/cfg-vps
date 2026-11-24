@@ -1,8 +1,18 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   deployClient = pkgs.writeShellApplication {
     name = "deploy-mihomo-client";
-    runtimeInputs = with pkgs; [ coreutils findutils gnutar gzip ];
+    runtimeInputs = with pkgs; [
+      coreutils
+      findutils
+      gnutar
+      gzip
+    ];
     text = builtins.readFile ./deploy-mihomo-client.sh;
   };
 in
@@ -26,12 +36,14 @@ in
       Type = "oneshot";
       RemainAfterExit = true;
       UMask = "0027";
-      ExecStart = "${deployClient}/bin/deploy-mihomo-client " + lib.escapeShellArgs [
-        config.sops.secrets.mihomo-client.path
-        "/srv/mihomo"
-        "root"
-        "caddy"
-      ];
+      ExecStart =
+        "${deployClient}/bin/deploy-mihomo-client "
+        + lib.escapeShellArgs [
+          config.sops.secrets.mihomo-client.path
+          "/srv/mihomo"
+          "root"
+          "caddy"
+        ];
     };
   };
 

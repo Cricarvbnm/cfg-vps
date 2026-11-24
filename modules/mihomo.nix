@@ -4,7 +4,7 @@ let
   args = "-d /var/lib/mihomo -f /etc/mihomo/config.yaml";
 in
 {
-  users.groups.mihomo = {};
+  users.groups.mihomo = { };
   users.users.mihomo = {
     isSystemUser = true;
     group = "mihomo";
@@ -24,7 +24,10 @@ in
   systemd.services.mihomo = rec {
     description = "Mihomo proxy";
     wantedBy = [ "multi-user.target" ];
-    wants = [ "sops-install-secrets.service" "network-online.target" ];
+    wants = [
+      "sops-install-secrets.service"
+      "network-online.target"
+    ];
     after = wants;
 
     serviceConfig = {

@@ -13,34 +13,40 @@
     };
   };
 
-  outputs = { nixpkgs, system-manager, sops-nix, ... }: 
-  let 
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-    commonModules = [
-      { nixpkgs.hostPlatform = system; }
-      sops-nix.nixosModules.sops
-      { sops.age.keyFile = "/etc/sops/age/keys.txt"; }
-      ./modules/mihomo.nix
-      ./modules/caddy.nix
-    ];
-  in
-  {
-    systemConfigs = {
-      default = system-manager.lib.makeSystemConfig {
-        modules = commonModules;
+  outputs =
+    {
+      nixpkgs,
+      system-manager,
+      sops-nix,
+      ...
+    }:
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+      commonModules = [
+        { nixpkgs.hostPlatform = system; }
+        sops-nix.nixosModules.sops
+        { sops.age.keyFile = "/etc/sops/age/keys.txt"; }
+        ./modules/mihomo.nix
+        ./modules/caddy.nix
+      ];
+    in
+    {
+      systemConfigs = {
+        default = system-manager.lib.makeSystemConfig {
+          modules = commonModules;
+        };
+
+        podman-test = system-manager.lib.makeSystemConfig {
+          modules = commonModules ++ [
+            ./tests/environment/module.nix
+          ];
+        };
       };
 
-      podman-test = system-manager.lib.makeSystemConfig {
-        modules = commonModules ++ [
-          ./tests/environment/module.nix
-        ];
+      devShells.${system}.default = import ./shell.nix {
+        inherit pkgs;
+        systemManager = system-manager.packages.${system}.default;
       };
     };
-
-    devShells.${system}.default = import ./shell.nix {
-      inherit pkgs;
-      systemManager = system-manager.packages.${system}.default;
-    };
-  };
 }
