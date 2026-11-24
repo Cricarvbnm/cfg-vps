@@ -6,6 +6,8 @@ let
   };
   caddy = "${caddy-pkg}/bin/caddy";
   args = "--config ${config.sops.secrets.caddyfile.path} --adapter caddyfile";
+
+  stateDir = import ./state-dir.nix;
 in
 {
   imports = [ ./mihomo-client.nix ];
@@ -36,13 +38,13 @@ in
 
     serviceConfig = {
       Type = "notify";
-      StateDirectory = "caddy";
+      StateDirectory = stateDir;
       StateDirectoryMode = "0750";
       User = "caddy";
       Group = "caddy";
       Environment = [
-        "XDG_DATA_HOME=/var/lib/caddy"
-        "XDG_CONFIG_HOME=/var/lib/caddy"
+        "XDG_DATA_HOME=/var/lib/${stateDir}"
+        "XDG_CONFIG_HOME=/var/lib/${stateDir}"
       ];
 
       ExecStart = "${caddy} run ${args}";

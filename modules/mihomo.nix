@@ -2,6 +2,10 @@
 let
   mihomo = "${pkgs.mihomo}/bin/mihomo";
   args = "-d /var/lib/mihomo -f /etc/mihomo/config.yaml";
+
+  ca = "acme-v02.api.letsencrypt.org-directory";
+  domain = "alechron.duckdns.org";
+  certDir = "/var/lib/${import ./caddy.nix/state-dir.nix}/caddy/certificates/${ca}/${domain}";
 in
 {
   users.groups.mihomo = { };
@@ -40,4 +44,9 @@ in
       RestartSec = "5s";
     };
   };
+
+  systemd.tmpfiles.rules = [
+    "L+ /var/lib/mihomo/server.crt - - - - ${certDir}/${domain}.crt"
+    "L+ /var/lib/mihomo/server.key - - - - ${certDir}/${domain}.key"
+  ];
 }
