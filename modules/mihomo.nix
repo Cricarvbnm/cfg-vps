@@ -10,10 +10,21 @@ in
     group = "mihomo";
   };
 
+  sops.secrets.mihomo-server = {
+    sopsFile = ../secrets/cfg-mihomo/server.yaml;
+    format = "yaml";
+    key = "";
+    path = "/etc/mihomo/config.yaml";
+    owner = "root";
+    group = "mihomo";
+    mode = "0640";
+    restartUnits = [ "mihomo.service" ];
+  };
+
   systemd.services.mihomo = rec {
     description = "Mihomo proxy";
     wantedBy = [ "multi-user.target" ];
-    wants = [ "network-online.target" ];
+    wants = [ "sops-install-secrets.service" "network-online.target" ];
     after = wants;
 
     serviceConfig = {

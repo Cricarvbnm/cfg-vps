@@ -8,6 +8,8 @@ let
   args = "--config ${config.sops.secrets.Caddyfile.path} --adapter caddyfile";
 in
 {
+  imports = [ ./mihomo-client.nix ];
+
   users.groups.caddy = {};
   users.users.caddy = {
     isSystemUser = true;
@@ -15,7 +17,7 @@ in
   };
 
   sops.secrets.Caddyfile = {
-    sopsFile = ../secrets/Caddyfile;
+    sopsFile = ../../secrets/Caddyfile;
     format = "binary";
     mode = "0440";
     owner = "caddy";
@@ -26,9 +28,8 @@ in
   systemd.services.caddy = rec {
     description = "Caddy web server";
     wantedBy = [ "multi-user.target" ];
-    wants = [ "network-online.target" ];
-    requires = [ "sops-install-secrets.service" ];
-    after = wants ++ requires;
+    wants = [ "network-online.target" "sops-install-secrets.service" ];
+    after = wants;
 
     serviceConfig = {
       Type = "notify";
