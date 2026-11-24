@@ -17,14 +17,11 @@ in
     after = wants;
 
     serviceConfig = {
-      User = "mihomo";
-      Group = "mihomo";
       StateDirectory = "mihomo";
       StateDirectoryMode = "0750";
       WorkingDirectory = "/var/lib/mihomo";
       ExecStartPre = "${mihomo} -t ${args}";
       ExecStart = "${mihomo} ${args}";
-      AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
       Restart = "on-failure";
       RestartSec = "5s";
     };
