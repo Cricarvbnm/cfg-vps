@@ -12,7 +12,7 @@ in
     format = "binary";
     owner = "root";
     group = "root";
-    mode = "0400";
+    mode = "0640";
     restartUnits = [ "mihomo-client.service" ];
   };
 
@@ -25,7 +25,7 @@ in
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      UMask = "0077";
+      UMask = "0027";
       ExecStart = "${deployClient}/bin/deploy-mihomo-client " + lib.escapeShellArgs [
         config.sops.secrets.mihomo-client.path
         "/srv/mihomo"

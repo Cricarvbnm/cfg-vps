@@ -5,7 +5,7 @@ let
     hash = "sha256-jSavcX0BjQRJZr8bJGy/mMPfLYYwlX+PeWc1IAzAZMM=";
   };
   caddy = "${caddy-pkg}/bin/caddy";
-  args = "--config ${config.sops.secrets.Caddyfile.path} --adapter caddyfile";
+  args = "--config ${config.sops.secrets.caddyfile.path} --adapter caddyfile";
 in
 {
   imports = [ ./mihomo-client.nix ];
@@ -16,11 +16,11 @@ in
     group = "caddy";
   };
 
-  sops.secrets.Caddyfile = {
+  sops.secrets.caddyfile = {
     sopsFile = ../../secrets/Caddyfile;
     format = "binary";
-    mode = "0440";
-    owner = "caddy";
+    mode = "0640";
+    owner = "root";
     group = "caddy";
     reloadUnits = [ "caddy.service" ];
   };
