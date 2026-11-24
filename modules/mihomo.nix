@@ -13,7 +13,7 @@ in
   sops.secrets.mihomo-server = {
     sopsFile = ../secrets/cfg-mihomo/server.yaml;
     format = "yaml";
-    key = "";
+    key = "data";
     path = "/etc/mihomo/config.yaml";
     owner = "root";
     group = "mihomo";
