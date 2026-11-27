@@ -1,13 +1,13 @@
 { config, pkgs, ... }:
 let
+  inherit (import ./shared.nix) state-directory-name state-directory;
+
   caddy-pkg = pkgs.caddy.withPlugins {
     plugins = [ "github.com/caddy-dns/duckdns@v0.5.0" ];
     hash = "sha256-jSavcX0BjQRJZr8bJGy/mMPfLYYwlX+PeWc1IAzAZMM=";
   };
   caddy = "${caddy-pkg}/bin/caddy";
   args = "--config ${config.sops.secrets.caddyfile.path} --adapter caddyfile";
-
-  stateDir = import ./state-dir.nix;
 in
 {
   imports = [ ./mihomo-client.nix ];
@@ -38,13 +38,13 @@ in
 
     serviceConfig = {
       Type = "notify";
-      StateDirectory = stateDir;
+      StateDirectory = state-directory-name;
       StateDirectoryMode = "0750";
       User = "caddy";
       Group = "caddy";
       Environment = [
-        "XDG_DATA_HOME=/var/lib/${stateDir}"
-        "XDG_CONFIG_HOME=/var/lib/${stateDir}"
+        "XDG_DATA_HOME=${state-directory}"
+        "XDG_CONFIG_HOME=${state-directory}"
       ];
 
       ExecStart = "${caddy} run ${args}";
